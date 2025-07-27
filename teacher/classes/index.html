@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/classes.css" />
+  <title>Manage Classes | Homemor</title>
+</head>
+<body>
+
+  <header><h1>Your Classes</h1></header>
+    <p><a href="/teacher/">↩ Go Back</a></p>
+  <main>
+    <div class="actions">
+  <a href="/teacher/add-class/" class="create-class-btn">➕ Create New Class</a>
+</div>
+
+    <div id="class-grid"></div>
+  </main>
+
+
+
+  <script>
+    const grid = document.getElementById("class-grid");
+    const classes = JSON.parse(localStorage.getItem("teacherClasses") || "[]");
+
+    classes.forEach(cls => {
+      const card = document.createElement("div");
+      card.className = "class-box";
+      card.innerHTML = `
+        <div class="class-header">
+          <h2>${cls.subject}</h2>
+          <span class="class-code">${cls.code}</span>
+        </div>
+        <p><strong>Grade:</strong> ${cls.grade}-${cls.section}</p>
+        <p><strong>Strand:</strong> ${cls.strand}</p>
+        <button onclick="enterClass('${cls.code}')">📂 Open Class</button>
+        <button onclick="archiveClass('${cls.code}')">📦 Archive</button>
+      `;
+      grid.appendChild(card);
+    });
+
+    function enterClass(code) {
+      window.location.href = `/teacher/class/?code=${code}`;
+    }
+
+    function archiveClass(code) {
+      const all = JSON.parse(localStorage.getItem("teacherClasses") || "[]");
+      const filtered = all.filter(c => c.code !== code);
+      localStorage.setItem("teacherClasses", JSON.stringify(filtered));
+      alert("Class archived.");
+      location.reload();
+    }
+  </script>
+</body>
+</html>

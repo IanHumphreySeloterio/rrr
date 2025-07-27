@@ -1,0 +1,96 @@
+.sidebar {
+  width: 250px;
+  background: #222;
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 30px 20px;
+  overflow-y: auto;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.menu {
+  list-style: none;
+  padding-left: 0;
+}
+
+.menu li {
+  margin-bottom: 15px;
+}
+
+.menu a,
+.menu span {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  display: block;
+  cursor: pointer;
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 10px;
+  display: none;
+}
+
+.expandable.open > .submenu {
+  display: block;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.sidebar {
+  width: 250px;
+  background: #222;
+  color: white;
+  height: 100vh;
+  padding: 20px;
+  position: fixed;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  margin-bottom: 10px;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+.expandable > span {
+  cursor: pointer;
+  font-weight: bold;
+  display: block;
+  margin-top: 20px;
+}
+
+.expandable.open li {
+  display: block;
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/sign-up.css" />
+    <title>Sign up | Homemor</title>
+    
+</head>
+<body>
+    
+<div class="signup-box">
+    <div class="signup-header">
+      <header>Create Account</header>
+    </div>
+
+    <form id="signup-form">
+      <div class="input-box">
+  <label class="role-label">Sign up as:</label>
+  <div class="role-select">
+    <label><input type="radio" name="role" value="student" required> Student</label>
+    <label><input type="radio" name="role" value="teacher"> Teacher</label>
+  </div>
+</div>
+
+      <div class="input-box">
+        <input type="email" class="input-field" placeholder="Email" id="signup-email" required  autocomplete="off">
+      </div>
+      <div class="input-box">
+        <input type="password" class="input-field" placeholder="Password" id="signup-password" required autocomplete="off">
+      </div>
+      <div class="input-submit">
+        <button type="submit" class="submit-btn" id="submit"></button>
+        <label for="submit">Sign Up</label>
+      </div>
+    </form>
+
+    <div class="sign-in-link">
+      <p>Already have an account? <a href="/index.html">Sign In</a></p>
+
+    </div>
+  </div>
+
+  <script>
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    document.getElementById("signup-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      const role = document.querySelector('input[name="role"]:checked').value;
+
+      if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const exists = users.some(user => user.email === email);
+
+      if (exists) {
+        alert("Email already registered.");
+      } else {
+        users.push({ email, password, role });
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Account created successfully!");
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <h3>Delete an Account</h3>
+<input type="text" id="delete-email" placeholder="Enter email to delete" />
+<button onclick="deleteAccount()">Delete Account</button>
+
+<script>
+  function deleteAccount() {
+    const emailToDelete = document.getElementById("delete-email").value;
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    const filteredUsers = users.filter(user => user.email !== emailToDelete);
+
+    if (filteredUsers.length === users.length) {
+      alert("No account found with that email.");
+    } else {
+      localStorage.setItem("users", JSON.stringify(filteredUsers));
+      alert("Account deleted successfully.");
+    }
+  }
+</script>
+
+
+</body>
+</html>

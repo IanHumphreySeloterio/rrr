@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/indiv-class.css" />
+  <title>Class Dashboard | Homemor</title>
+</head>
+<body>
+  <header>
+    <h1 id="class-title">Loading...</h1>
+    <div id="class-code-box">
+      Join Code: <span id="code-display"></span>
+      <button onclick="copyCode()">📋 Copy</button>
+      <button onclick="showStudents()">👥 Students</button>
+    </div>
+  </header>
+
+<nav id="tab-nav">
+  <button onclick="switchTab('home')">🏠 Home</button>
+  <button onclick="switchTab('classwork')">📚 Classwork</button>
+  <button onclick="switchTab('submissions')">📥 Submissions</button>
+  <button onclick="switchTab('grades')">📊 Grades</button>
+</nav>
+
+
+  <main>
+    <!-- 🏠 Home Tab -->
+    <section id="home-tab" class="tab">
+      <h2>📌 Posted Homework & Quizzes</h2>
+      <div id="posted-list"></div>
+    </section>
+
+    <!-- 📚 Classwork Tab -->
+    <section id="classwork-tab" class="tab hidden">
+      <h2>Create Classwork</h2>
+      <button onclick="showForm('homework')">➕ Homework</button>
+      <button onclick="showForm('quiz')">➕ Quiz</button>
+
+      <form id="assignment-form" class="hidden">
+        <h3 id="form-type">Create</h3>
+        <label for="a-title">Title:</label>
+        <input type="text" id="a-title" required />
+
+        <label for="a-desc">Instructions:</label>
+        <textarea id="a-desc" required></textarea>
+
+        <label for="a-points">Points:</label>
+        <input type="number" id="a-points" min="0" required />
+
+        <label for="a-date">Deadline Date:</label>
+        <input type="date" id="a-date" required title="Select deadline date" />
+
+        <label for="a-time">Deadline Time:</label>
+        <input type="time" id="a-time" value="23:59" required />
+
+
+        <label for="a-img">Attachment URL:</label>
+        <label for="a-img-file">📷 Attach Pictures:</label>
+<input type="file" id="a-img-file" accept="image/*" multiple />
+
+<label for="a-file-upload">📄 Attach Files:</label>
+<input type="file" id="a-file-upload" multiple />
+
+
+        <button type="submit">📤 Post</button>
+      </form>
+    </section>
+
+    <!-- 📥 Submissions Tab -->
+    <section id="submissions-tab" class="tab hidden">
+      <h2>📥 Student Submissions</h2>
+      <div id="submission-list"></div>
+    </section>
+
+    <!-- 📊 Grades Tab -->
+<section id="grades-tab" class="tab hidden">
+  <h2>📊 Grades Overview</h2>
+  <div id="grade-summary"></div>
+</section>
+
+  </main>
+
+  <!-- 👥 Student Modal -->
+  <div id="students-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>👥 Enrolled Students</h2>
+      <ul id="student-scroll-list"></ul>
+      <button onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+
+    const classList = JSON.parse(localStorage.getItem("teacherClasses") || "[]");
+    const currentClass = classList.find(c => c.code === code);
+    const studentData = JSON.parse(localStorage.getItem("joinedStudents") || "{}");
+    const students = studentData[code] || [];
+    const assignmentKey = `assignments_${code}`;
+    const assignments = JSON.parse(localStorage.getItem(assignmentKey) || "[]");
+    const submissionsKey = `submissions_${code}`;
+    const submissions = JSON.parse(localStorage.getItem(submissionsKey) || "{}");
+
+    if (currentClass) {
+      document.getElementById("class-title").textContent =
+        `${currentClass.subject} · Grade ${currentClass.grade}-${currentClass.section} · ${currentClass.strand}`;
+      document.getElementById("code-display").textContent = code;
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText(code);
+      alert("Copied join code: " + code);
+    }
+
+    function showStudents() {
+      const modal = document.getElementById("students-modal");
+      const list = document.getElementById("student-scroll-list");
+      modal.classList.remove("hidden");
+      list.innerHTML = students.length
+        ? students.map(name => `<li>${name}</li>`).join("")
+        : "<li><em>No students yet</em></li>";
+    }
+
+    function closeModal() {
+      document.getElementById("students-modal").classList.add("hidden");
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.add("hidden"));
+      document.getElementById(`${tab}-tab`).classList.remove("hidden");
+    }
+
+    function goToGrades() {
+      location.href = `/teacher/class/grades/index.html?code=${code}`;
+    }
+
+    function showForm(type) {
+      document.getElementById("form-type").textContent = `Create ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+      document.getElementById("assignment-form").dataset.type = type;
+      document.getElementById("assignment-form").classList.remove("hidden");
+      document.getElementById("a-time").value = "23:59";
+
+    }
+
+    document.getElementById("assignment-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const type = e.target.dataset.type;
+      const title = document.getElementById("a-title").value.trim();
+      const desc = document.getElementById("a-desc").value.trim();
+      const points = document.getElementById("a-points").value;
+      const date = document.getElementById("a-date").value;
+      const time = "23:59"; // Always set to 11:59 PM
+      const img = document.getElementById("a-img").value.trim();
+
+      const newItem = { type, title, desc, points, date, time, img };
+      assignments.push(newItem);
+      localStorage.setItem(assignmentKey, JSON.stringify(assignments));
+      e.target.reset();
+      e.target.classList.add("hidden");
+      renderPosted();
+      switchTab("home");
+    });
+
+    function renderPosted() {
+      const container = document.getElementById("posted-list");
+      container.innerHTML = "";
+      assignments.forEach(item => {
+        container.innerHTML += `
+          <div class="item-card">
+            <h3>${item.type.toUpperCase()}: ${item.title} (${item.points} pts)</h3>
+            <p>${item.desc}</p>
+            ${item.img ? `<img src="${item.img}" alt="Attachment" class="item-img" />` : ""}
+            <p><strong>Due:</strong> ${item.date} at ${item.time}</p>
+          </div>
+        `;
+      });
+    }
+
+    function renderSubmissions() {
+      const container = document.getElementById("submission-list");
+      container.innerHTML = "";
+      students.forEach(name => {
+        const studentSubs = submissions[name] || [];
+        if (studentSubs.length === 0) return;
+        container.innerHTML += `<h3>${name}</h3>`;
+        studentSubs.forEach(sub => {
+          container.innerHTML += `
+            <div class="item-card">
+              <p><strong>${sub.title}</strong></p>
+              <p>Answer: ${sub.answer || "<em>No answer provided</em>"}</p>
+              <p>Score: ${sub.score || "Not graded yet"}</p>
+              <p>Submitted on: ${new Date(sub.date).toLocaleString()}</p>
+            </div>
+          `;
+        });
+      });
+    }
+
+    renderPosted();
+    renderSubmissions();
+
+    function renderGrades() {
+  const container = document.getElementById("grade-summary");
+  container.innerHTML = "";
+
+  students.forEach(name => {
+    const subs = submissions[name] || [];
+    let earned = 0;
+    let possible = 0;
+
+    const studentDiv = document.createElement("div");
+    studentDiv.className = "student-card";
+    studentDiv.innerHTML = `<h3>${name}</h3>`;
+
+    subs.forEach(sub => {
+      const assignment = assignments.find(a => a.title === sub.title);
+      if (!assignment) return;
+
+      const score = parseInt(sub.score || "0");
+      const max = parseInt(assignment.points || "0");
+      const deadline = new Date(assignment.date + "T" + assignment.time);
+      const submitted = new Date(sub.date);
+      const lateDays = Math.ceil((submitted - deadline) / (1000 * 60 * 60 * 24));
+
+      earned += score;
+      possible += max;
+
+      studentDiv.innerHTML += `
+        <div class="score-entry">
+          <p><strong>${sub.title}</strong>: ${score} / ${max}</p>
+          <p>Submitted: ${submitted.toLocaleString()}</p>
+          ${lateDays > 0
+            ? `<p class="late">Late by ${lateDays} day(s)</p>`
+            : `<p class="on-time">On time</p>`}
+        </div>
+      `;
+    });
+
+    const percent = possible > 0 ? Math.round((earned / possible) * 100) : 0;
+    studentDiv.innerHTML += `<h4>Total: ${earned} / ${possible} — Grade: ${percent}%</h4>`;
+    container.appendChild(studentDiv);
+  });
+}
+
+renderGrades();
+
+document.getElementById("a-img-file").addEventListener("change", e => {
+  const previewArea = document.createElement("div");
+  previewArea.id = "image-preview-area";
+  previewArea.innerHTML = "<h4>Selected Images:</h4>";
+
+  Array.from(e.target.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = document.createElement("img");
+      img.src = reader.result;
+      img.className = "preview-thumb";
+      previewArea.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById("assignment-form").appendChild(previewArea);
+});
+
+  </script>
+</body>
+</html>

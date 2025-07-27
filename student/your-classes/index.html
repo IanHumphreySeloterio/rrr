@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/classes.css" />
+  <title>Your Classes | Homemor</title>
+</head>
+<body>
+
+  <header><h1>Your Classes</h1></header>
+  <p><a href="/student/">↩ Go Back</a></p>
+
+  <main>
+    <div class="actions">
+      <button class="join-class-btn" id="open-modal">🔗 Join a Class</button>
+    </div>
+
+    <div id="class-grid"></div>
+  </main>
+
+  <!-- Modal -->
+  <div id="join-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-modal">&times;</span>
+      <h2>Enter Class Code</h2>
+      <form id="join-form">
+        <label for="code">Class Code</label>
+        <input type="text" id="code" name="code" required placeholder="e.g. ABC123" />
+        <button type="submit" class="create-btn">✅ Join</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+  const grid = document.getElementById("class-grid");
+  const studentClasses = JSON.parse(localStorage.getItem("studentClasses") || "[]");
+
+  studentClasses.forEach(cls => {
+    const card = document.createElement("div");
+    card.className = "class-box";
+    card.innerHTML = `
+      <div class="class-header">
+        <h2>${cls.subject}</h2>
+        <span class="class-code">${cls.code}</span>
+      </div>
+      <p><strong>Grade:</strong> ${cls.grade}-${cls.section}</p>
+      <p><strong>Strand:</strong> ${cls.strand}</p>
+      <button onclick="enterClass('${cls.code}')">📂 Open Class</button>
+      <button onclick="archiveClass('${cls.code}')">📦 Archive</button>
+    `;
+    grid.appendChild(card);
+  });
+
+  function enterClass(code) {
+    window.location.href = `/student/your-class/index.html?code=${code}`;
+  }
+
+  function archiveClass(code) {
+    const all = JSON.parse(localStorage.getItem("studentClasses") || "[]");
+    const archived = JSON.parse(localStorage.getItem("archivedStudentClasses") || "[]");
+
+    const classToArchive = all.find(c => c.code === code);
+    if (classToArchive) {
+      archived.push(classToArchive);
+      localStorage.setItem("archivedStudentClasses", JSON.stringify(archived));
+    }
+
+    const filtered = all.filter(c => c.code !== code);
+    localStorage.setItem("studentClasses", JSON.stringify(filtered));
+    alert("Class archived.");
+    location.reload();
+  }
+</script>
+
+</body>
+</html>

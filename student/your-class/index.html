@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/student-class.css" />
+  <title>Classroom | Homemor</title>
+</head>
+<body>
+  <header>
+    <h1 id="class-title">Classroom</h1>
+    <p><a href="/student/your-classes/">↩ Back to Classes</a></p>
+  </header>
+
+  <nav class="tabs">
+    <button onclick="showTab('home')">🏠 Home</button>
+    <button onclick="showTab('classwork')">📘 Classwork</button>
+    <button onclick="showTab('submissions')">📤 Submissions</button>
+  </nav>
+
+  <main>
+    <section id="home" class="tab-content"></section>
+    <section id="classwork" class="tab-content hidden"></section>
+    <section id="submissions" class="tab-content hidden"></section>
+  </main>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const classCode = urlParams.get("code");
+
+    const studentClasses = JSON.parse(localStorage.getItem("studentClasses") || "[]");
+    const currentClass = studentClasses.find(cls => cls.code === classCode);
+
+    if (!currentClass) {
+      document.body.innerHTML = "<h2>Class not found.</h2>";
+      throw new Error("Class not found");
+    }
+
+    document.getElementById("class-title").textContent = `${currentClass.subject} (${currentClass.section})`;
+
+    // Load assignments from teacherClasses
+    const teacherClasses = JSON.parse(localStorage.getItem("teacherClasses") || "[]");
+    const teacherClass = teacherClasses.find(cls => cls.code === classCode);
+    const assignments = teacherClass?.assignments || [];
+
+    // HOME TAB: Show announcements or assignments
+    const homeSection = document.getElementById("home");
+    homeSection.innerHTML = `<h2>📢 Announcements & Assignments</h2>`;
+    assignments.forEach((a, i) => {
+      homeSection.innerHTML += `
+        <div class="assignment-box">
+          <h3>${a.title}</h3>
+          <p>${a.description}</p>
+          <p><strong>Due:</strong> ${a.dueDate}</p>
+        </div>
+      `;
+    });
+
+    // CLASSWORK TAB: Turn-in assignments
+    const classworkSection = document.getElementById("classwork");
+    classworkSection.innerHTML = `<h2>📘 Classwork</h2>`;
+    assignments.forEach((a, i) => {
+      classworkSection.innerHTML += `
+        <div class="assignment-box">
+          <h3>${a.title}</h3>
+          <p>${a.description}</p>
+          <button onclick="submitWork(${i})">📤 Turn In</button>
+        </div>
+      `;
+    });
+
+    // SUBMISSIONS TAB: Show submitted work
+    const submissionsSection = document.getElementById("submissions");
+    const submissions = JSON.parse(localStorage.getItem("studentSubmissions") || "[]")
+      .filter(s => s.code === classCode);
+
+    submissionsSection.innerHTML = `<h2>📤 Your Submissions</h2>`;
+    submissions.forEach(s => {
+      submissionsSection.innerHTML += `
+        <div class="assignment-box">
+          <h3>${s.title}</h3>
+          <p><strong>Submitted:</strong> ${s.submittedAt}</p>
+        </div>
+      `;
+    });
+
+    function showTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+      document.getElementById(tabId).classList.remove("hidden");
+    }
+
+    function submitWork(index) {
+      const assignment = assignments[index];
+      const submissions = JSON.parse(localStorage.getItem("studentSubmissions") || "[]");
+      submissions.push({
+        code: classCode,
+        title: assignment.title,
+        submittedAt: new Date().toLocaleString()
+      });
+      localStorage.setItem("studentSubmissions", JSON.stringify(submissions));
+      alert("Assignment submitted!");
+      location.reload();
+    }
+  </script>
+</body>
+</html>

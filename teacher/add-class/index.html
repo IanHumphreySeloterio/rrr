@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/add-class.css" />
+  <title>Create Class | Homemor</title>
+</head>
+<body>
+  <main class="container">
+
+    <p><a href="/teacher/">↩ Go Back</a></p>
+
+    <h1>Create a New Class</h1>
+
+    <form id="create-class-form">
+      <label for="class-subject">Subject:</label>
+      <input id="class-subject" name="subject" type="text" required autocomplete="off"/>
+
+      <label for="class-grade">Grade:</label>
+      <select id="class-grade" name="grade" title="Select Grade Level" required>
+        <option value="">Select Grade</option>
+        <option value="11">Grade 11</option>
+        <option value="12">Grade 12</option>
+      </select>
+
+      <label for="class-section">Section:</label>
+      <input id="class-section" name="section" type="text" required autocomplete="off"/>
+
+      <label for="class-strand">Strand:</label>
+      <select id="class-strand" name="strand" title="Select Strand" required>
+        <option value="">Select Strand</option>
+        <option value="ICT">ICT</option>
+        <option value="STEM">STEM</option>
+        <option value="HUMMS">HUMMS</option>
+        <option value="HE">HE</option>
+        <option value="ABM">ABM</option>
+        <option value="GAS">GAS</option>
+      </select>
+
+      <button type="submit" class="create-btn">Create Class</button>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById("create-class-form");
+
+    function generateCode() {
+      return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const subject = document.getElementById("class-subject").value.trim();
+      const grade = document.getElementById("class-grade").value.trim();
+      const section = document.getElementById("class-section").value.trim();
+      const strand = document.getElementById("class-strand").value.trim();
+      const code = generateCode();
+
+      const newClass = { subject, grade, section, strand, code };
+
+      const allClasses = JSON.parse(localStorage.getItem("teacherClasses") || "[]");
+      allClasses.push(newClass);
+      localStorage.setItem("teacherClasses", JSON.stringify(allClasses));
+
+      alert("Class created successfully!\nJoin Code: " + code);
+      window.location.href = "/teacher/classes/"; // Redirect back to teacher dashboard
+
+    });
+  </script>
+</body>
+</html>

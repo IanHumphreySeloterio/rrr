@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/styles/home.css" />
+  <title>Teacher Dashboard | Homemor</title>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo">Homemor</div>
+  <ul class="menu">
+    <li><a href="#">🏠 Home</a></li>
+    <li><a href="#">📅 Calendar</a></li>
+    <li><a href="classes/">📘 Class</a></li>
+    <li><a href="#">📦 Archived Classes</a></li>
+    <li><a href="#">⚙️ Settings</a></li>
+  </ul>
+</aside>
+
+<script>
+  document.querySelectorAll('.expandable > span').forEach(item => {
+
+const classLinks = document.getElementById("class-links");
+const savedClasses = JSON.parse(localStorage.getItem("teacherClasses") || "[]");
+
+savedClasses.forEach(cls => {
+  const li = document.createElement("li");
+li.innerHTML = `<a href="../teacher/class/index.html?code=${cls.code}">${cls.subject}</a>`;
+
+  classLinks.appendChild(li);
+});
+
+
+    item.addEventListener('click', () => {
+      item.parentElement.classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

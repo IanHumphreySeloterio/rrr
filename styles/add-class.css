@@ -1,0 +1,91 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+form label {
+  font-weight: 500;
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.grade-section {
+  display: flex;
+  gap: 10px;
+}
+
+.grade-section select,
+.grade-section input {
+  flex: 1;
+}
+
+.create-btn {
+  width: 100%;
+  margin-top: 30px;
+  padding: 12px;
+  background: #222;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s ease;
+}
+
+.create-btn:hover {
+  background: black;
+}
+
+#class-code-box {
+  margin-top: 30px;
+  text-align: center;
+  background: #e4e4e4;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+#class-code-box h2 {
+  font-size: 28px;
+  margin: 10px 0;
+}
+
+#class-code-box button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
